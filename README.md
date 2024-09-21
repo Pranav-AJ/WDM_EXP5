@@ -23,7 +23,7 @@ The Boolean model in Information Retrieval (IR) is a fundamental model used for 
 
 ### Program:
 
-
+```
 import numpy as np
 import pandas as pd
 
@@ -50,8 +50,8 @@ class BooleanRetrieval:
     def boolean_search(self, query):
         //type your code here
 
-
 # Example usage:
+
 if __name__ == "__main__":
     indexer = BooleanRetrieval()
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     # Boolean search
     query1 = input("Enter your boolean query: ")
     print(f"Results for '{query1}': {indexer.boolean_search(query1)}")
-
+```
 ### Output:
 
 ### Result:
