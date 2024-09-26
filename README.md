@@ -58,7 +58,7 @@ class BooleanRetrieval:
     def print_documents_matrix_table(self):
         df = pd.DataFrame(self.documents_matrix, columns=self.index.keys())
         print(df)
- 
+
     def print_all_terms(self):
         print("All terms in the documents:")
         print(list(self.index.keys()))
@@ -108,5 +108,7 @@ if __name__ == "__main__":
     print(f"Results for '{query1}': {indexer.boolean_search(query1)}")
 ```
 ### Output:
+![image](https://github.com/user-attachments/assets/439e2a43-d390-451d-ad5f-6490b6ac92a1)
 
 ### Result:
+The program has been executed successfully
