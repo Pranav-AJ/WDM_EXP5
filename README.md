@@ -34,7 +34,7 @@ class BooleanRetrieval:
 
     def index_document(self, doc_id, text):
         terms = text.lower().split()
-        print("document-", doc_id, terms)
+        print("Document -", doc_id, terms)
 
         for term in terms:
             if term not in self.index:
@@ -65,28 +65,50 @@ class BooleanRetrieval:
 
     def boolean_search(self, query):
         query_terms = query.lower().split()
-        results = None
+        results = set()  # Initialize as empty set to accumulate results
+        current_set = None  # Current set to handle 'or' logic
 
-        for term in query_terms:
-            doc_ids = self.index.get(term, set())
-            if results is None:
-                results = doc_ids.copy()
+        i = 0
+        while i < len(query_terms):
+            term = query_terms[i]
+
+            if term == 'or':
+                if current_set is not None:
+                    results.update(current_set)
+                current_set = None  # Reset current set for the next term
+            elif term == 'and':
+                i += 1
+                continue  # 'and' is implicit, move to next term
+            elif term == 'not':
+                i += 1
+                if i < len(query_terms):
+                    not_term = query_terms[i]
+                    if not_term in self.index:
+                        not_docs = self.index[not_term]
+                        if current_set is None:
+                            current_set = set(range(1, len(documents) + 1))  # All doc IDs
+                        current_set.difference_update(not_docs)
             else:
-                if term.startswith('not'):
-                    results.difference_update(doc_ids)
-                elif term == 'or':
-                    results.update(doc_ids)
-                elif term == 'and':
-                    results.intersection_update(doc_ids)
+                if term in self.index:
+                    term_docs = self.index[term]
+                    if current_set is None:
+                        current_set = term_docs.copy()
+                    else:
+                        current_set.intersection_update(term_docs)
+                else:
+                    current_set = set()  # If the term doesn't exist, it results in an empty set
 
-        return list(results) if results else []
+            i += 1
 
-# Example usage:
+        # Update results with the last processed set
+        if current_set is not None:
+            results.update(current_set)
+
+        return sorted(results)
 
 if __name__ == "__main__":
     indexer = BooleanRetrieval()
 
-    # Indexing documents
     documents = {
         1: "Python is a programming language",
         2: "Information retrieval deals with finding information",
@@ -96,19 +118,32 @@ if __name__ == "__main__":
     for doc_id, text in documents.items():
         indexer.index_document(doc_id, text)
 
-    # Create a matrix of zeros and ones
     indexer.create_documents_matrix(documents)
     indexer.print_documents_matrix_table()
-
-    # Print all terms in the documents
     indexer.print_all_terms()
 
-    # Boolean search
-    query1 = input("Enter your boolean query: ")
-    print(f"Results for '{query1}': {indexer.boolean_search(query1)}")
+    query = input("Enter your boolean query: ")
+    results = indexer.boolean_search(query)
+    if results:
+        print(f"Results for '{query}': {results}")
+    else:
+        print("No results found for the query.")
+
+
 ```
 ### Output:
-![image](https://github.com/user-attachments/assets/439e2a43-d390-451d-ad5f-6490b6ac92a1)
+
+### OR
+![image](https://github.com/user-attachments/assets/d7c9b9e2-8572-4e50-a01b-78f8cb4e3b31)
+
+### NOT
+
+![image](https://github.com/user-attachments/assets/b6f03a17-a8b3-4521-8341-73ba137a2a9e)
+
+
+### AND
+![image](https://github.com/user-attachments/assets/afeb8930-9f2b-431c-9ae9-5eacd1dd57f3)
+
 
 ### Result:
 The program has been executed successfully
